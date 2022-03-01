@@ -1,4 +1,5 @@
-# resume
+# Introduction
+A markdown resume based on vue.js
 
 ## Project setup
 ```
