@@ -5,13 +5,13 @@
         <a href="/">Resume</a>
       </div>
       <div class="header-right">
-        <!-- <div class="dropdown">
+        <div class="dropdown">
           <a class="header-link">Theme<span>▼</span></a>
           <div class="dropdown-content">
-            <a>GitHub</a>
-            <a>TUI</a>
+            <a @click="changeStyle('github')">GitHub</a>
+            <a @click="changeStyle('tui')">TUI</a>
           </div>
-        </div> -->
+        </div>
         <div class="dropdown">
           <a class="header-link">Download<span>▼</span></a>
           <div class="dropdown-content">
@@ -29,6 +29,7 @@
         :previewStyle="previewStyle"
         :useCommandShortcut="useCommandShortcut"
         :initialValue="initContent"
+        @change="onMdContentChange()"
       />
     </div>
   </div>
@@ -41,14 +42,18 @@ import initContent from "./assets/initContent";
 import fileDownload from "js-file-download";
 import printJS from "print-js";
 import "./assets/app.css";
+import style from "./assets/customized/customizedTheme";
+
 export default {
   name: "App",
   data() {
     return {
+      theme: "github",
       initContent: initContent,
       useCommandShortcut: true,
       previewStyle: window.innerWidth > 700 ? "vertical" : "tab",
       editor: this.$refs.editor,
+      localMd: window.localStorage.getItem("mdContent"),
     };
   },
   components: {
@@ -57,11 +62,15 @@ export default {
   methods: {
     downloadPdf: function () {
       let content = this.$refs.editor.invoke("getHTML");
+      let decorate = style.getOutline({
+        content: content,
+        css: style.themes[this.theme].pdfCss,
+      });
       printJS({
         type: "raw-html",
         css: "",
         scanStyles: true,
-        printable: content,
+        printable: decorate,
         targetStyles: ["*"],
         documentTitle: "&nbsp",
       });
@@ -74,6 +83,21 @@ export default {
       let content = this.$refs.editor.invoke("getMarkdown");
       fileDownload(content, "resume.md");
     },
+    changeStyle: function (name) {
+      style.removeStyleSheet(this.theme);
+      this.theme = name;
+      style.addEditorStyle(this.theme);
+    },
+    onMdContentChange: function () {
+      let content = this.$refs.editor.invoke("getMarkdown");
+      window.localStorage.setItem("mdContent", content);
+    },
+  },
+  created() {
+    if (this.localMd) {
+      this.initContent = this.localMd;
+    }
+    style.addEditorStyle(this.theme);
   },
 };
 </script>

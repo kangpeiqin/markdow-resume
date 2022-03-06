@@ -1,6 +1,9 @@
 # Introduction
 A markdown resume based on vue.js
-
+## Install Yarn
+```
+npm install --global yarn
+```
 ## Project setup
 ```
 yarn install
@@ -20,6 +23,3 @@ yarn build
 ```
 yarn lint
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
